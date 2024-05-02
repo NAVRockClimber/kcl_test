@@ -1,0 +1,21 @@
+[dependencies]
+  [dependencies.k8s]
+    name = "k8s"
+    full_name = "k8s_1.28"
+    version = "1.28"
+    sum = "aTxPUVZyr9MdiB3YdiY/8pCh9sC55yURnZdGlJsKG6Q="
+    reg = "ghcr.io"
+    repo = "kcl-lang/k8s"
+    oci_tag = "1.28"
+  [dependencies.konfig]
+    name = "konfig"
+    full_name = "konfig_0.5.0"
+    version = "0.5.0"
+    sum = "oJh/QkE3/2lPVXhOzi+ZhoWPUP97+z5XsW3U0VApdxo="
+    reg = "ghcr.io"
+    repo = "kcl-lang/konfig"
+    oci_tag = "0.5.0"
+  [dependencies.template]
+    name = "template"
+    full_name = "template_0.0.1"
+    version = "0.0.1"
