@@ -1,6 +1,6 @@
 # values.k
 
-schema Values:
+schema Values[v: any]:
     app_name: str = option("app_name", default="my-cronjob")
     namespace: str = option("namespace", default="test-namespace")
     serviceAccountName: str = option("serviceAccountName", default=app_name + "-sa")
@@ -47,4 +47,4 @@ schema ServiceAccountValues:
     name: str = Values.ServiceAccount.name
     namespace: str = Values.ServiceAccount.namespace
 
-Defaults: Values = Values()
+Defaults: Values = Values({})

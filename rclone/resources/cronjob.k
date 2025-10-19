@@ -1,8 +1,7 @@
 # cronjob.k
 import k8s.api.batch.v1 as batch_v1
-import resources.values as values
 
-schema CronJob[v: values.CronJobValues]:
+schema CronJob[v: any]:
     cronJob: batch_v1.CronJob = batch_v1.CronJob {
         metadata = {
             name = v.name,
