@@ -1,0 +1,103 @@
+---
+# Source: rclone/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-transfer-sa
+  labels:
+    helm.sh/chart: rclone-2.0.1
+    app.kubernetes.io/name: rclone
+    app.kubernetes.io/instance: rclone-jobs
+    app.kubernetes.io/version: "1.68"
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: rclone/templates/config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rclone
+  labels:
+    helm.sh/chart: rclone-2.0.1
+    app.kubernetes.io/name: rclone
+    app.kubernetes.io/instance: rclone-jobs
+    app.kubernetes.io/version: "1.68"
+    app.kubernetes.io/managed-by: Helm
+data:
+  rclone.conf: |
+---
+# Source: rclone/templates/cron.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rclone-jobs
+  labels:
+    helm.sh/chart: rclone-2.0.1
+    app.kubernetes.io/name: rclone
+    app.kubernetes.io/instance: rclone-jobs
+    app.kubernetes.io/version: "1.68"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  schedule: 0 10 * * *
+  suspend: false
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      ttlSecondsAfterFinished: 518400
+      template:
+        metadata: {}
+        spec:
+          serviceAccountName: backup-transfer-sa
+          securityContext:
+            {}
+          restartPolicy: OnFailure
+          containers:
+            - name: rclone
+              securityContext:
+                {}
+              image: "rclone/rclone:1.68"
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: REMOTE_A_NAME
+                  value: myminio
+                - name: REMOTE_B_NAME
+                  value: myminio
+                - name: REMOTE_A_BUCKET
+                  value: dependency-track
+                - name: REMOTE_B_BUCKET
+                  value: backup
+              command: ["/bin/sh"]
+              args:
+                - -c
+                - >-
+                  rclone copy $REMOTE_A_NAME:"$REMOTE_A_BUCKET/" $REMOTE_B_NAME:"$REMOTE_A_BUCKET/" --config $RCLONE_CONFIG_FILE --log-level=DEBUG --retries=1 --fast-list --progress --ignore-checksum --metadata --metadata-include "tier=STANDARD"
+                  
+              livenessProbe:
+                exec:
+                  command:
+                  - /bin/sh
+                  - -c
+                  - date
+                initialDelaySeconds: 10
+                periodSeconds: 5
+              resources:
+                {}
+              volumeMounts:
+                - mountPath: /opt/rclone.conf
+                  name: rclone-conf
+                  readOnly: false
+                  subPath: rclone.conf
+              
+          volumes:
+            - configMap:
+                name: rclone
+              name: rclone-conf
+---
+# Source: rclone/templates/external-secrets.yaml
+---
+---
+# Source: rclone/templates/secrets.yaml
+---

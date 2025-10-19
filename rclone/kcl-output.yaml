@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rclone-jobs
+  namespace: test-namespace
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        metadata:
+          labels:
+            app: rclone-jobs
+        spec:
+          containers:
+          - args:
+            - '-c'
+            - rclone copy $REMOTE_A_NAME:"$REMOTE_A_BUCKET/" $REMOTE_B_NAME:"$REMOTE_A_BUCKET/" --config $RCLONE_CONFIG_FILE --log-level=DEBUG --retries=1 --fast-list --progress --ignore-checksum --metadata --metadata-include "tier=STANDARD"
+            command:
+            - /bin/sh
+            image: rclone/rclone:5.6
+            name: rclone-jobs
+          restartPolicy: OnFailure
+          serviceAccountName: backup-transfer-sa
+      ttlSecondsAfterFinished: 518400
+  schedule: '0 10 * * *'
+  successfulJobsHistoryLimit: 5
+  suspend: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-transfer-sa
+  namespace: test-namespace

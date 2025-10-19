@@ -1,0 +1,5 @@
+app_name: rclone-jobs
+serviceAccountName: "backup-transfer-sa"
+CronValues:
+  concurrencyPolicy: "Forbid"
+  tag: "5.6"
