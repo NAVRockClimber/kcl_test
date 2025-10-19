@@ -5,8 +5,9 @@ import manifests
 
 
 appSettings = option("app")
-print("Using Values: " + str(appSettings))
+overlaySettings = option("overlay", default={})
 appValues = values.Values(appSettings)
+print("Using AppValues: " + str(appValues))
 
 cronResource = cronjob.CronJob(appValues.CronValues).cronJob
 

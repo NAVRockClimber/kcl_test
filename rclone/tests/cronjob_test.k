@@ -24,7 +24,6 @@ test_jobTemplateSpec = lambda {
 
 test_jobTemplateSpecTemplate: () -> any = lambda {
         kclCronJob.spec.jobTemplate.spec.template.spec.containers = None
-        kclCronJob.spec.jobTemplate.spec.template.spec.metadata = None
         kclCronJob.spec.jobTemplate.spec.template.spec.securityContext = None
         kclCronJob.spec.jobTemplate.spec.template.spec.containers = None
         kclCronJob.spec.jobTemplate.spec.template.spec.volumes = None
